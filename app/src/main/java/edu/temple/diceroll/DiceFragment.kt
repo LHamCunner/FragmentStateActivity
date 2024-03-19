@@ -10,14 +10,19 @@ import android.widget.TextView
 import kotlin.random.Random
 
 const val DIE_SIDES = "dIcE_SiDeS"
+const val CURRENT_IMAGE_KEY = "currentImage"
 
 class DiceFragment : Fragment() {
     private var sides: Int? = null
+    private var currentImageId = "0";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             sides = it.getInt(DIE_SIDES)
+        }
+        savedInstanceState?.run{
+            currentImageId = getString(CURRENT_IMAGE_KEY, "0")
         }
     }
 
@@ -28,10 +33,20 @@ class DiceFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_dice, container, false).apply {
 
             val numberDisplayTextView = findViewById<TextView>(R.id.numberDisplay)
+            numberDisplayTextView.text = currentImageId.toString()
             findViewById<Button>(R.id.rollButton).setOnClickListener {
-                numberDisplayTextView.text = (Random.nextInt(sides!!) + 1).toString()
+                val rollResult = (Random.nextInt(sides!!) + 1).toString()
+                numberDisplayTextView.text = rollResult
+                currentImageId = rollResult
             }
         }
+    }
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString(CURRENT_IMAGE_KEY, currentImageId)
     }
 
     companion object {
